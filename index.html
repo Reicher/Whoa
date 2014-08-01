@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<select id="typeSelector" onchange="createNew()">
+  <option value="blobs" selected="selected">Blobs</option>
+  <option value="test">Test</option>
+</select>
+
+<button type="resetButton" onclick="createNew()">New one!</button>
+<br>
+
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #000000;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+
+var selectBox = document.getElementById("artType");
+
+function position (w, h){
+  this.w = w;
+  this.h = h;
+  this.x = w*Math.random();
+  this.y = h*Math.random();
+  
+  this.dx;
+  this.dy;
+  this.time = 0;
+  this.speed = 0;
+  
+  this.outsideBorders = function(x, y){
+    return x < 0 || y < 0 || x > this.w || y > this.h;
+  }
+  
+  this.update = function(ms){
+    intervals = 4000;
+    maxSpeed = 2;
+    if(this.time <= 0 || this.outsideBorders(this.x, this.y)){
+      this.speed = Math.random() * 2;
+      this.dx = (-0.5 + Math.random()) * this.speed;
+      this.dy = (-0.5 + Math.random()) * this.speed; 
+      this.time = Math.random() * intervals;
+    }
+    
+    this.x += this.dx;
+    this.y += this.dy;
+    this.time -= ms;
+  };
+}
+
+function Blob () {
+    w = canvas.width;
+    h = canvas.height;
+    this.start  = new position(w, h);
+    this.bPoint1 = new position(w, h);
+    this.bPoint2 = new position(w, h);
+    this.end    = new position(w, h);
+    this.color = "#"+((1<<24)*Math.random()|0).toString(16);
+    this.alfa = Math.random();
+
+    this.draw = function(){
+        // Fill with gradient
+        
+        ctx.beginPath();
+        ctx.globalAlpha = this.alfa;
+        ctx.fillStyle = this.color;
+        ctx.moveTo(this.start.x, this.start.y);
+        ctx.quadraticCurveTo(   this.bPoint1.x, 
+                                this.bPoint1.y,
+                                this.end.x,
+                                this.end.y);
+        ctx.moveTo(this.end.x, this.end.y);                                
+        ctx.quadraticCurveTo(   this.bPoint2.x, 
+                                this.bPoint2.y,
+                                this.start.x,
+                                this.start.y);                                
+        ctx.fill();
+    };
+    
+    this.update = function(ms){
+      this.start.update(ms);
+      this.bPoint1.update(ms);
+      this.bPoint2.update(ms);
+      this.end.update(ms);
+
+    }
+};
+
+draw = function(){
+    ctx.fillStyle="#000000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    
+    for(b = 0; b < blobs.length; b++)
+        blobs[b].draw();
+}
+
+update = function(ms){
+    for(b = 0; b < blobs.length; b++)
+        blobs[b].update(ms);
+}
+
+createNew = function(){
+    var strUser = typeSelector.options[typeSelector.selectedIndex].value;
+    switch (strUser){
+        case "blobs":
+            blobs = [];
+            nrBlobs = 50;
+            for(n = 0; n < nrBlobs; n++)
+                blobs.push(new Blob());
+        break;
+        default:
+            alert("Not suported yet.");
+        break;
+    }
+}
+
+// START
+var blobs = [];
+
+createNew();
+
+intervalMs = 50;
+setInterval(function(){draw()}, intervalMs);
+setInterval(function(){update(intervalMs)}, intervalMs);
+
+</script>
+
+</body>
+</html>
+
+
+Enter text in [Markdown](http://daringfireball.net/projects/markdown/). Use the toolbar above, or click the **?** button for formatting help.
