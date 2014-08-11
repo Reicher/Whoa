@@ -106,7 +106,7 @@ createNew = function(){
     switch (strUser){
         case "blobs":
             blobs = [];
-            nrBlobs = 50;
+            nrBlobs = 30;
             for(n = 0; n < nrBlobs; n++)
                 blobs.push(new Blob());
         break;
@@ -121,7 +121,7 @@ var blobs = [];
 
 createNew();
 
-intervalMs = 50;
+intervalMs = 25;
 setInterval(function(){draw()}, intervalMs);
 setInterval(function(){update(intervalMs)}, intervalMs);
 
